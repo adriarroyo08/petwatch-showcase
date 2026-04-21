@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokemonPet — Tu Mascota Virtual Pokemon</title>
+    <meta name="description" content="PokemonPet: aplicacion fan-made de mascota virtual Pokemon para WearOS y Android. Cuida, entrena, lucha e intercambia Pokemon desde tu muneca.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ========== RESET & BASE ========== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-card-hover: rgba(255, 255, 255, 0.08);
+            --red: #EE1515;
+            --red-dark: #B91010;
+            --gold: #FFD700;
+            --gold-dim: #C4A600;
+            --white: #FFFFFF;
+            --gray-light: #B0B0B0;
+            --gray-mid: #666;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: 20px;
+            --glow-red: 0 0 30px rgba(238, 21, 21, 0.3);
+            --glow-gold: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ========== PARTICLES CANVAS ========== */
+        #particles-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ========== LANGUAGE SELECTOR ========== */
+        .lang-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 4px;
+        }
+
+        .lang-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 20px;
+            background: transparent;
+            color: var(--gray-light);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lang-btn.active {
+            background: var(--red);
+            color: var(--white);
+        }
+
+        /* ========== NAVIGATION ========== */
+        .nav {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            z-index: 900;
+            padding: 15px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: transform 0.3s;
+        }
+
+        .nav-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--red), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+            margin-left: auto;
+            margin-right: 90px;
+        }
+
+        .nav-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--white); }
+
+        /* ========== SECTIONS ========== */
+        section {
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--white), var(--gray-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--gray-light);
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto 60px;
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 30px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(238, 21, 21, 0.08) 0%, transparent 50%);
+            animation: heroGlow 8s ease-in-out infinite;
+        }
+
+        @keyframes heroGlow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 30px;
+            border: 1px solid var(--gold-dim);
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+        }
+
+        .hero-sprite {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 30px;
+            display: block;
+            object-fit: contain;
+            image-rendering: pixelated;
+            animation: spriteBounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(238, 21, 21, 0.4));
+        }
+
+        @keyframes spriteBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .hero-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(40px, 8vw, 80px);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--white) 0%, var(--red) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero-tagline {
+            font-size: clamp(16px, 3vw, 22px);
+            color: var(--gray-light);
+            margin-bottom: 40px;
+            font-weight: 300;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--red), var(--red-dark));
+            color: var(--white);
+            box-shadow: var(--glow-red);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 50px rgba(238, 21, 21, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .hero-sprites-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 50px;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+
+        .hero-mini-sprite {
+            width: 50px;
+            height: 50px;
+            image-rendering: pixelated;
+            opacity: 0.5;
+            transition: all 0.3s;
+            filter: grayscale(0.5);
+        }
+
+        .hero-mini-sprite:hover {
+            opacity: 1;
+            filter: grayscale(0);
+            transform: scale(1.3);
+        }
+
+        /* ========== CONCEPT ========== */
+        .concept {
+            padding: 120px 0;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        .concept-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 35px 25px;
+            text-align: center;
+            transition: all 0.4s;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .concept-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .concept-card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-5px);
+            border-color: var(--red);
+            box-shadow: var(--glow-red);
+        }
+
+        .concept-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            image-rendering: pixelated;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+        }
+
+        .concept-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .concept-card p {
+            color: var(--gray-light);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* ========== DEVICE MOCKUPS ========== */
+        .device-section {
+            padding: 120px 0;
+        }
+
+        .device-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .device-layout.reverse { direction: rtl; }
+        .device-layout.reverse > * { direction: ltr; }
+
+        /* Watch Mockup */
+        .watch-mockup {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: #1a1a1a;
+            border: 6px solid #333;
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 0 0 3px #222, 0 20px 60px rgba(0,0,0,0.5);
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.6s;
+        }
+
+        .watch-mockup.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .watch-mockup::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 30px;
+            background: #333;
+            border-radius: 3px 3px 0 0;
+            z-index: 5;
+        }
+
+        .watch-mockup::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 30px;
+            background: #333;
+            border-radius: 0 0 3px 3px;
+            z-index: 5;
+        }
+
+        .watch-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #1a2a1a, #0a0a0a);
+            position: relative;
+        }
+
+        .watch-sprite {
+            width: 120px;
+            height: 120px;
+            image-rendering: pixelated;
+            animation: spriteBounce 2.5s ease-in-out infinite;
+            z-index: 2;
+            position: relative;
+        }
+
+        .watch-ui-overlay {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 3;
+        }
+
+        .watch-heart {
+            width: 10px;
+            height: 10px;
+            background: var(--red);
+            border-radius: 2px;
+            animation: heartPulse 1.5s ease-in-out infinite;
+        }
+
+        .watch-heart:nth-child(2) { animation-delay: 0.2s; }
+        .watch-heart:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes heartPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.8); }
+        }
+
+        .watch-hp-bar {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            z-index: 3;
+            overflow: hidden;
+        }
+
+        .watch-hp-fill {
+            height: 100%;
+            width: 75%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 3px;
+            animation: hpPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes hpPulse {
+            0%, 100% { width: 75%; }
+            50% { width: 80%; }
+        }
+
+        .watch-name {
+            position: absolute;
+            bottom: 52px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--white);
+            z-index: 3;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .watch-level {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            color: var(--gold);
+            z-index: 3;
+            font-weight: 600;
+        }
+
+        /* Phone Mockup */
+        .phone-mockup {
+            width: 280px;
+            height: 560px;
+            border-radius: 35px;
+            background: #1a1a1a;
+            border: 4px solid #333;
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.6s;
+        }
+
+        .phone-mockup.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: #1a1a1a;
+            border-radius: 0 0 15px 15px;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 31px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .phone-screen-carousel {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            animation: phoneCarousel 12s ease-in-out infinite;
+        }
+
+        .phone-screen-carousel img {
+            width: 25%;
+            height: 100%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        @keyframes phoneCarousel {
+            0%, 20% { transform: translateX(0); }
+            25%, 45% { transform: translateX(-25%); }
+            50%, 70% { transform: translateX(-50%); }
+            75%, 95% { transform: translateX(-75%); }
+        }
+
+        .device-info {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 0.6s;
+        }
+
+        .device-info.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .device-info.from-right {
+            transform: translateX(30px);
+        }
+
+        .device-info.from-right.visible {
+            transform: translateX(0);
+        }
+
+        .device-tag {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .tag-watch {
+            background: rgba(238, 21, 21, 0.15);
+            color: var(--red);
+            border: 1px solid rgba(238, 21, 21, 0.3);
+        }
+
+        .tag-phone {
+            background: rgba(255, 215, 0, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .device-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(24px, 4vw, 36px);
+            font-weight: 900;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .device-desc {
+            color: var(--gray-light);
+            font-size: 15px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .feature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--gray-light);
+        }
+
+        .feature-list li .feature-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .feature-dot.red { background: var(--red); box-shadow: 0 0 8px rgba(238, 21, 21, 0.5); }
+        .feature-dot.gold { background: var(--gold); box-shadow: 0 0 8px rgba(255, 215, 0, 0.5); }
+
+        /* ========== CONNECTION ========== */
+        .connection {
+            padding: 120px 0;
+            overflow: hidden;
+        }
+
+        .connection-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .conn-device {
+            text-align: center;
+            opacity: 0;
+            transition: all 0.6s;
+        }
+
+        .conn-device.visible { opacity: 1; }
+
+        .conn-device-icon {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            backdrop-filter: blur(var(--glass-blur));
+            border: 2px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .conn-device-icon img {
+            width: 80px;
+            height: 80px;
+            image-rendering: pixelated;
+        }
+
+        .conn-device-label {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .conn-device-sub {
+            color: var(--gray-mid);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .conn-arrows {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            min-width: 200px;
+            opacity: 0;
+            transition: all 0.6s 0.3s;
+        }
+
+        .conn-arrows.visible { opacity: 1; }
+
+        .conn-arrow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .conn-arrow.sync {
+            background: rgba(238, 21, 21, 0.1);
+            border: 1px solid rgba(238, 21, 21, 0.2);
+            color: var(--red);
+        }
+
+        .conn-arrow.cmd {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            color: var(--gold);
+        }
+
+        .conn-arrow.cloud {
+            background: rgba(100, 180, 255, 0.1);
+            border: 1px solid rgba(100, 180, 255, 0.2);
+            color: #64B4FF;
+        }
+
+        .arrow-icon {
+            font-size: 16px;
+            animation: arrowPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+
+        /* ========== FEATURES GALLERY ========== */
+        .features {
+            padding: 120px 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: all 0.4s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-3px);
+            border-color: rgba(238, 21, 21, 0.3);
+        }
+
+        .feature-card-sprite {
+            width: 64px;
+            height: 64px;
+            image-rendering: pixelated;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.2));
+        }
+
+        .feature-card-content h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .feature-card-content p {
+            color: var(--gray-light);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* ========== SCREENSHOTS ========== */
+        .screenshots {
+            padding: 120px 0;
+        }
+
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        .screenshot-item {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid var(--glass-border);
+            transition: all 0.4s;
+            opacity: 0;
+            transform: scale(0.9);
+            aspect-ratio: 9/19;
+        }
+
+        .screenshot-item.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .screenshot-item:hover {
+            transform: scale(1.03);
+            border-color: var(--red);
+            box-shadow: var(--glow-red);
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .screenshot-label {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--gray-light);
+            font-weight: 500;
+        }
+
+        /* ========== LEGAL ========== */
+        .legal {
+            padding: 120px 0;
+        }
+
+        .legal-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .legal-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 25px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s;
+        }
+
+        .legal-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .legal-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legal-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .legal-icon.warn { background: rgba(255, 215, 0, 0.2); }
+        .legal-icon.info { background: rgba(100, 180, 255, 0.2); }
+        .legal-icon.check { background: rgba(76, 175, 80, 0.2); }
+
+        .legal-card p, .legal-card ul {
+            color: var(--gray-light);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .legal-card ul {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .legal-card ul li {
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .legal-card ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 12px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--red);
+        }
+
+        .legal-banner {
+            background: linear-gradient(135deg, rgba(238, 21, 21, 0.1), rgba(255, 215, 0, 0.1));
+            border: 1px solid rgba(238, 21, 21, 0.2);
+            border-radius: 16px;
+            padding: 25px 30px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--gray-light);
+            line-height: 1.8;
+            margin-top: 30px;
+        }
+
+        .legal-banner strong {
+            color: var(--white);
+        }
+
+        /* ========== DOWNLOAD ========== */
+        .download {
+            padding: 120px 0;
+            text-align: center;
+        }
+
+        .download-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .download-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.4s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .download-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .download-card:hover {
+            border-color: var(--red);
+            transform: translateY(-5px);
+            box-shadow: var(--glow-red);
+        }
+
+        .download-device-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .download-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .download-card p {
+            color: var(--gray-light);
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .download-card .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .download-instructions {
+            margin-top: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .download-instructions h4 {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .download-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .download-step {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .step-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--red);
+            color: var(--white);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .download-step p {
+            color: var(--gray-light);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            padding: 60px 0 30px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand .nav-logo {
+            font-size: 22px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .footer-brand p {
+            color: var(--gray-mid);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .footer-links h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--gray-light);
+        }
+
+        .footer-links a {
+            display: block;
+            color: var(--gray-mid);
+            font-size: 13px;
+            text-decoration: none;
+            padding: 4px 0;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover { color: var(--white); }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .footer-disclaimer {
+            color: var(--gray-mid);
+            font-size: 11px;
+            line-height: 1.8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ========== SCROLL ANIMATIONS ========== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .device-layout, .device-layout.reverse {
+                grid-template-columns: 1fr;
+                direction: ltr;
+                text-align: center;
+            }
+            .device-layout.reverse > * { direction: ltr; }
+            .feature-list { align-items: center; }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .connection-diagram { flex-direction: column; }
+            .conn-arrows { min-width: auto; }
+            .hero { padding-top: 100px; }
+            .watch-mockup { width: 220px; height: 220px; }
+            .phone-mockup { width: 240px; height: 480px; }
+        }
+
+        /* ========== MISC ========== */
+        .gradient-line {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--red), var(--gold));
+            border-radius: 2px;
+            margin: 0 auto 30px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Particles -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- Language Selector -->
+<div class="lang-selector">
+    <button class="lang-btn active" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+    <div class="nav-logo">PokemonPet</div>
+    <ul class="nav-links">
+        <li><a href="#concept" data-i18n="nav_concept">Concepto</a></li>
+        <li><a href="#wearos" data-i18n="nav_wearos">WearOS</a></li>
+        <li><a href="#mobile" data-i18n="nav_mobile">Mobile</a></li>
+        <li><a href="#connection" data-i18n="nav_connection">Conexion</a></li>
+        <li><a href="#features" data-i18n="nav_features">Features</a></li>
+        <li><a href="#legal" data-i18n="nav_legal">Legal</a></li>
+        <li><a href="#download" data-i18n="nav_download">Descarga</a></li>
+    </ul>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero" id="hero">
+    <div class="hero-content">
+        <img class="hero-sprite" id="hero-sprite" src="" alt="Pokemon Sprite">
+        <h1 class="hero-title">PokemonPet</h1>
+        <p class="hero-tagline" data-i18n="hero_tagline">Tu mascota virtual Pokemon en tu muneca</p>
+        <div class="hero-badge" data-i18n="hero_badge">FAN PROJECT &bull; SIN ANIMO DE LUCRO</div>
+        <div class="hero-buttons">
+            <a href="https://github.com/adriarroyo08/PetWatch1/releases/latest" target="_blank" rel="noopener" class="btn btn-primary" data-i18n="hero_btn_download">Descargar APK</a>
+            <a href="#concept" class="btn btn-secondary" data-i18n="hero_btn_explore">Explorar</a>
+        </div>
+        <div class="hero-sprites-row" id="hero-sprites-row"></div>
+    </div>
+</section>
+
+<!-- ==================== CONCEPT ==================== -->
+<section class="concept" id="concept">
+    <div class="container">
+        <div class="gradient-line"></div>
+        <h2 class="section-title" data-i18n="concept_title">Que es PokemonPet?</h2>
+        <p class="section-subtitle" data-i18n="concept_subtitle">Una experiencia Tamagotchi con el universo Pokemon. Cuida, entrena, lucha e intercambia desde tu smartwatch.</p>
+        <div class="concept-grid">
+            <div class="concept-card" data-anim>
+                <img class="concept-icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oran-berry.png" alt="Feed">
+                <h3 data-i18n="concept_feed_title">Alimenta</h3>
+                <p data-i18n="concept_feed_desc">Cuida el hambre y la salud de tus Pokemon con bayas y objetos. El sistema de hambre afecta la regeneracion de vida.</p>
+            </div>
+            <div class="concept-card" data-anim>
+                <img class="concept-icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png" alt="Train">
+                <h3 data-i18n="concept_train_title">Entrena</h3>
+                <p data-i18n="concept_train_desc">Gana experiencia caminando en la vida real. Cada 10 pasos = 1 XP. Sube de nivel y evoluciona a tus Pokemon.</p>
+            </div>
+            <div class="concept-card" data-anim>
+                <img class="concept-icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Battle">
+                <h3 data-i18n="concept_battle_title">Lucha</h3>
+                <p data-i18n="concept_battle_desc">Batallas por turnos con sistema completo de tipos, STAB, criticos y efectos de estado. Encuentros salvajes y entrenadores.</p>
+            </div>
+            <div class="concept-card" data-anim>
+                <img class="concept-icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/94.gif" alt="Trade">
+                <h3 data-i18n="concept_trade_title">Intercambia</h3>
+                <p data-i18n="concept_trade_desc">Intercambia Pokemon con amigos via Bluetooth. Algunos Pokemon evolucionan al ser intercambiados.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== WEAROS ==================== -->
+<section class="device-section" id="wearos">
+    <div class="container">
+        <div class="device-layout">
+            <div class="device-info" data-anim>
+                <span class="device-tag tag-watch">WearOS</span>
+                <h2 class="device-title" data-i18n="wearos_title">Tu Pokemon en la muneca</h2>
+                <p class="device-desc" data-i18n="wearos_desc">La app principal vive en tu smartwatch WearOS. Cuida a tu equipo de hasta 6 Pokemon, lucha contra Pokemon salvajes, eclosiona huevos caminando e intercambia con amigos por Bluetooth.</p>
+                <ul class="feature-list">
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f1">Batallas por turnos con sistema completo de tipos</span></li>
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f2">Encuentros salvajes segun hora del dia y fase lunar</span></li>
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f3">Eclosion de huevos caminando en la vida real</span></li>
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f4">Tienda de bayas con rotacion diaria</span></li>
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f5">Intercambio de Pokemon via Bluetooth</span></li>
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f6">100+ evoluciones por nivel, piedra, intercambio y amistad</span></li>
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f7">Naturalezas, estadisticas y objetos equipables</span></li>
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f8">Modo Roguelike con oleadas y jefes</span></li>
+                </ul>
+            </div>
+            <div>
+                <div class="watch-mockup" data-anim>
+                    <div class="watch-screen">
+                        <div class="watch-ui-overlay">
+                            <div class="watch-heart"></div>
+                            <div class="watch-heart"></div>
+                            <div class="watch-heart"></div>
+                        </div>
+                        <img class="watch-sprite" id="watch-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/25.gif" alt="Pikachu">
+                        <span class="watch-name" id="watch-name">PIKACHU</span>
+                        <div class="watch-hp-bar"><div class="watch-hp-fill"></div></div>
+                        <span class="watch-level">Lv. 42</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== MOBILE ==================== -->
+<section class="device-section" id="mobile">
+    <div class="container">
+        <div class="device-layout reverse">
+            <div class="device-info from-right" data-anim>
+                <span class="device-tag tag-phone">Android</span>
+                <h2 class="device-title" data-i18n="mobile_title">Companion App</h2>
+                <p class="device-desc" data-i18n="mobile_desc">Expande tu aventura en el movil. Gestiona tu equipo, explora habitats interactivos, completa misiones narrativas con personajes legendarios, y respalda tu progreso en la nube.</p>
+                <ul class="feature-list">
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f1">6 tabs: Equipo, PC, Quests, Pokedex, Inventario, Perfil</span></li>
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f2">Batallas 6v6 con entrenadores inteligentes</span></li>
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f3">8+ misiones narrativas (Deoxys, Eevee, Celebi...)</span></li>
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f4">11 habitats tematicos con Pokemon animados</span></li>
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f5">Tower Defense con los Regi legendarios</span></li>
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f6">Modo Roguelike con biomas y recompensas</span></li>
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f7">Incubadora de huevos con boost de objetos</span></li>
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f8">Copia de seguridad en la nube</span></li>
+                </ul>
+            </div>
+            <div>
+                <div class="phone-mockup" data-anim>
+                    <div class="phone-notch"></div>
+                    <div class="phone-screen">
+                        <div class="phone-screen-carousel">
+                            <img src="screen-quest-hub.png" alt="Quest Hub">
+                            <img src="screen-td-battle.png" alt="Tower Defense">
+                            <img src="screen-td-prep.png" alt="Preparation">
+                            <img src="screen-quest-complete.png" alt="Quest Complete">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== CONNECTION ==================== -->
+<section class="connection" id="connection">
+    <div class="container">
+        <div class="gradient-line"></div>
+        <h2 class="section-title" data-i18n="conn_title">Watch + Phone</h2>
+        <p class="section-subtitle" data-i18n="conn_subtitle">Dos dispositivos, una aventura. Sincronizacion en tiempo real entre tu reloj y tu movil.</p>
+
+        <div class="connection-diagram">
+            <div class="conn-device" data-anim>
+                <div class="conn-device-icon" style="border-color: var(--red);">
+                    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/6.gif" alt="Charizard">
+                </div>
+                <div class="conn-device-label">WearOS</div>
+                <div class="conn-device-sub" data-i18n="conn_watch_sub">App principal</div>
+            </div>
+
+            <div class="conn-arrows" data-anim>
+                <div class="conn-arrow sync">
+                    <span class="arrow-icon">&#8594;</span>
+                    <span data-i18n="conn_sync">Sincroniza equipo, PC, huevos y pokedex</span>
+                </div>
+                <div class="conn-arrow cmd">
+                    <span class="arrow-icon">&#8592;</span>
+                    <span data-i18n="conn_cmd">Gestiona tu equipo desde el movil</span>
+                </div>
+                <div class="conn-arrow cloud">
+                    <span class="arrow-icon">&#8593;</span>
+                    <span data-i18n="conn_cloud">Copia de seguridad en la nube</span>
+                </div>
+            </div>
+
+            <div class="conn-device" data-anim>
+                <div class="conn-device-icon" style="border-color: var(--gold);">
+                    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/150.gif" alt="Mewtwo">
+                </div>
+                <div class="conn-device-label">Android</div>
+                <div class="conn-device-sub" data-i18n="conn_phone_sub">Companion + quests</div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ==================== FEATURES ==================== -->
+<section class="features" id="features">
+    <div class="container">
+        <div class="gradient-line"></div>
+        <h2 class="section-title" data-i18n="features_title">Caracteristicas</h2>
+        <p class="section-subtitle" data-i18n="features_subtitle">Un juego completo en tu muneca con profundidad de mecanicas digna de los juegos originales.</p>
+
+        <div class="features-grid">
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/448.gif" alt="Lucario">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_battle_title">Motor de Batallas</h3>
+                    <p data-i18n="feat_battle_desc">Dano fisico/especial, STAB x1.5, 18 tipos, criticos, estados alterados, prioridad de movimientos, Reflect y Light Screen.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/133.gif" alt="Eevee">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_evo_title">Evoluciones</h3>
+                    <p data-i18n="feat_evo_desc">100+ evoluciones por nivel, 37+ por piedra, evoluciones por intercambio y amistad. Incluye cadenas completas Gen 1-3.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/384.gif" alt="Rayquaza">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_quest_title">Misiones Narrativas</h3>
+                    <p data-i18n="feat_quest_desc">8+ arcos narrativos: Deoxys, Eevee, Torre Lavanda, Bestias Legendarias, Celebi, Lugia, Hoenn y los Regi Colossus.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/143.gif" alt="Snorlax">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_habitat_title">Habitats Interactivos</h3>
+                    <p data-i18n="feat_habitat_desc">11 zonas tematicas con sprites animados PMD. Los Pokemon caminan, duermen, socializan y reaccionan segun su personalidad.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/379.gif" alt="Registeel">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_td_title">Tower Defense</h3>
+                    <p data-i18n="feat_td_desc">Minijuego de defensa de torre con los Regi legendarios. Posiciona Pokemon estrategicamente para defender contra oleadas.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/94.gif" alt="Gengar">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_rogue_title">Modo Roguelike</h3>
+                    <p data-i18n="feat_rogue_desc">Encuentros en oleadas con biomas, peligros ambientales, jefes unicos y pools de recompensas aleatorias.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/egg.png" alt="Egg"
+                     onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png'">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_egg_title">Eclosion de Huevos</h3>
+                    <p data-i18n="feat_egg_desc">Eclosiona huevos caminando en la vida real. Pasos detectados pasivamente. Comun: 500-1k, Legendario: 10k-15k. Shiny x1.5 pasos.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/245.gif" alt="Suicune">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_encounter_title">Encuentros Salvajes</h3>
+                    <p data-i18n="feat_encounter_desc">Spawns por hora del dia y fase lunar. Shiny odds: 1/8192 normal, 1/4096 luna llena. Legendarios desde nivel 40+.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== SCREENSHOTS ==================== -->
+<section class="screenshots" id="screenshots">
+    <div class="container">
+        <div class="gradient-line"></div>
+        <h2 class="section-title" data-i18n="screenshots_title">Capturas</h2>
+        <p class="section-subtitle" data-i18n="screenshots_subtitle">Vistazos de la aplicacion companion en accion.</p>
+
+        <div class="screenshots-grid">
+            <div>
+                <div class="screenshot-item" data-anim>
+                    <img src="screen-quest-hub.png" alt="Quest Hub">
+                </div>
+                <p class="screenshot-label" data-i18n="ss_quest">Hub de Misiones</p>
+            </div>
+            <div>
+                <div class="screenshot-item" data-anim>
+                    <img src="screen-td-battle.png" alt="Tower Defense">
+                </div>
+                <p class="screenshot-label" data-i18n="ss_td">Tower Defense</p>
+            </div>
+            <div>
+                <div class="screenshot-item" data-anim>
+                    <img src="screen-td-prep.png" alt="Preparation">
+                </div>
+                <p class="screenshot-label" data-i18n="ss_prep">Preparacion</p>
+            </div>
+            <div>
+                <div class="screenshot-item" data-anim>
+                    <img src="screen-quest-complete.png" alt="Quest Complete">
+                </div>
+                <p class="screenshot-label" data-i18n="ss_complete">Quest Completada</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== LEGAL ==================== -->
+<section class="legal" id="legal">
+    <div class="container">
+        <div class="gradient-line"></div>
+        <h2 class="section-title" data-i18n="legal_title">Marco Legal</h2>
+        <p class="section-subtitle" data-i18n="legal_subtitle">Este proyecto respeta la propiedad intelectual de sus titulares.</p>
+
+        <div class="legal-content">
+            <div class="legal-card" data-anim>
+                <h3><span class="legal-icon warn">!</span> <span data-i18n="legal_disclaimer_title">Disclaimer</span></h3>
+                <p data-i18n="legal_disclaimer_text">Este es un proyecto de fan (fan-made) creado con fines educativos y de entretenimiento personal, sin animo de lucro. No se cobra, no se monetiza y no se pretende obtener beneficio economico de ninguna forma. La aplicacion se distribuye gratuitamente.</p>
+            </div>
+
+            <div class="legal-card" data-anim>
+                <h3><span class="legal-icon info">i</span> <span data-i18n="legal_ip_title">Propiedad Intelectual</span></h3>
+                <p data-i18n="legal_ip_text">Pokemon, los nombres de Pokemon, personajes, sprites y elementos relacionados son marcas registradas y propiedad intelectual de:</p>
+                <ul>
+                    <li data-i18n="legal_ip_1">The Pokemon Company</li>
+                    <li data-i18n="legal_ip_2">Nintendo Co., Ltd.</li>
+                    <li data-i18n="legal_ip_3">Game Freak Inc.</li>
+                    <li data-i18n="legal_ip_4">Creatures Inc.</li>
+                </ul>
+                <p style="margin-top: 15px;" data-i18n="legal_ip_noaffil">Este proyecto NO esta afiliado, patrocinado, respaldado ni aprobado por ninguna de estas empresas.</p>
+            </div>
+
+            <div class="legal-card" data-anim>
+                <h3><span class="legal-icon check">&#10003;</span> <span data-i18n="legal_assets_title">Atribuciones de Assets</span></h3>
+                <ul>
+                    <li><strong>PokeAPI</strong> — <span data-i18n="legal_attr_pokeapi">Datos de Pokemon, movimientos, sprites estaticos. API abierta y gratuita.</span></li>
+                    <li><strong>Pokemon Showdown</strong> — <span data-i18n="legal_attr_showdown">Sprites animados GIF. Proyecto open-source de la comunidad.</span></li>
+                    <li><strong>PMD SpriteCollab</strong> — <span data-i18n="legal_attr_pmd">Sprites direccionales animados para habitats. Proyecto comunitario colaborativo.</span></li>
+                    <li><strong>Google Play Services</strong> — <span data-i18n="legal_attr_google">Wearable Data Layer API, Health Services API, Nearby Connections.</span></li>
+                </ul>
+            </div>
+
+            <div class="legal-banner" data-i18n="legal_banner">
+                <strong>Pokemon&reg;</strong> es una marca registrada de The Pokemon Company. Todos los nombres de Pokemon, personajes y elementos graficos relacionados son propiedad de sus respectivos titulares. Este proyecto es una obra derivada de fan, sin fines comerciales, creada con el maximo respeto hacia la propiedad intelectual original.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== DOWNLOAD ==================== -->
+<section class="download" id="download">
+    <div class="container">
+        <div class="gradient-line"></div>
+        <h2 class="section-title" data-i18n="dl_title">Descarga</h2>
+        <p class="section-subtitle" data-i18n="dl_subtitle">Descarga las APKs directamente. Aplicacion gratuita, sin animo de lucro.</p>
+
+        <div class="download-cards">
+            <div class="download-card" data-anim>
+                <div class="download-device-icon">&#9201;</div>
+                <h3>WearOS App</h3>
+                <p data-i18n="dl_watch_desc">App principal para smartwatch WearOS 3.0+. Requiere Android 12 o superior.</p>
+                <a href="https://github.com/adriarroyo08/PetWatch1/releases/latest/download/PokemonPet-WearOS-v-auto-2026-04-15.apk" class="btn btn-primary" data-i18n="dl_watch_btn">Descargar WearOS APK</a>
+            </div>
+            <div class="download-card" data-anim>
+                <div class="download-device-icon">&#128241;</div>
+                <h3>Android Companion</h3>
+                <p data-i18n="dl_phone_desc">App companion para movil Android 8.0+. Quests, habitats, backup en nube.</p>
+                <a href="https://github.com/adriarroyo08/PetWatch1/releases/latest/download/PokemonPet-Mobile-v-auto-2026-04-15.apk" class="btn btn-primary" data-i18n="dl_phone_btn">Descargar Android APK</a>
+            </div>
+        </div>
+
+        <div class="download-instructions">
+            <h4 data-i18n="dl_install_title">Como instalar</h4>
+            <div class="download-steps">
+                <div class="download-step">
+                    <span class="step-num">1</span>
+                    <p data-i18n="dl_step1">Descarga el archivo APK en tu dispositivo.</p>
+                </div>
+                <div class="download-step">
+                    <span class="step-num">2</span>
+                    <p data-i18n="dl_step2">En Ajustes > Seguridad, activa "Origenes desconocidos" o "Instalar apps desconocidas".</p>
+                </div>
+                <div class="download-step">
+                    <span class="step-num">3</span>
+                    <p data-i18n="dl_step3">Abre el archivo APK descargado y sigue las instrucciones de instalacion.</p>
+                </div>
+                <div class="download-step">
+                    <span class="step-num">4</span>
+                    <p data-i18n="dl_step4">Para la app WearOS, transfiere la APK a tu smartwatch desde la app Wear OS de tu movil.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <span class="nav-logo">PokemonPet</span>
+                <p data-i18n="footer_desc">Proyecto fan-made de mascota virtual Pokemon para WearOS y Android. Creado con amor por la comunidad Pokemon.</p>
+            </div>
+            <div class="footer-links">
+                <h4 data-i18n="footer_nav">Navegacion</h4>
+                <a href="#concept" data-i18n="nav_concept">Concepto</a>
+                <a href="#wearos" data-i18n="nav_wearos">WearOS</a>
+                <a href="#mobile" data-i18n="nav_mobile">Mobile</a>
+                <a href="#features" data-i18n="nav_features">Features</a>
+                <a href="#download" data-i18n="nav_download">Descarga</a>
+            </div>
+            <div class="footer-links">
+                <h4 data-i18n="footer_resources">Recursos</h4>
+                <a href="https://pokeapi.co/" target="_blank" rel="noopener">PokeAPI</a>
+                <a href="https://play.pokemonshowdown.com/" target="_blank" rel="noopener">Pokemon Showdown</a>
+                <a href="https://sprites.pmdcollab.org/" target="_blank" rel="noopener">PMD SpriteCollab</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-disclaimer" data-i18n="footer_legal">Pokemon&reg; es una marca registrada de The Pokemon Company, Nintendo, Game Freak y Creatures Inc. Este es un proyecto de fan sin animo de lucro, no afiliado ni respaldado por los titulares de derechos. Todos los derechos de Pokemon pertenecen a sus respectivos propietarios.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ========== TRANSLATIONS ==========
+const i18n = {
+    es: {
+        nav_concept: "Concepto",
+        nav_wearos: "WearOS",
+        nav_mobile: "Mobile",
+        nav_connection: "Conexion",
+        nav_features: "Features",
+        nav_legal: "Legal",
+        nav_download: "Descarga",
+
+        hero_badge: "FAN PROJECT &bull; SIN ANIMO DE LUCRO",
+        hero_tagline: "Tu mascota virtual Pokemon en tu muneca",
+        hero_btn_download: "Descargar APK",
+        hero_btn_explore: "Explorar",
+
+        concept_title: "Que es PokemonPet?",
+        concept_subtitle: "Una experiencia Tamagotchi con el universo Pokemon. Cuida, entrena, lucha e intercambia desde tu smartwatch.",
+        concept_feed_title: "Alimenta",
+        concept_feed_desc: "Cuida el hambre y la salud de tus Pokemon con bayas y objetos. El sistema de hambre afecta la regeneracion de vida.",
+        concept_train_title: "Entrena",
+        concept_train_desc: "Gana experiencia caminando en la vida real. Cada 10 pasos = 1 XP. Sube de nivel y evoluciona a tus Pokemon.",
+        concept_battle_title: "Lucha",
+        concept_battle_desc: "Batallas por turnos con sistema completo de tipos, STAB, criticos y efectos de estado. Encuentros salvajes y entrenadores.",
+        concept_trade_title: "Intercambia",
+        concept_trade_desc: "Intercambia Pokemon con amigos via Bluetooth. Algunos Pokemon evolucionan al ser intercambiados.",
+
+        wearos_title: "Tu Pokemon en la muneca",
+        wearos_desc: "La app principal vive en tu smartwatch WearOS. Cuida a tu equipo de hasta 6 Pokemon, lucha contra Pokemon salvajes, eclosiona huevos caminando e intercambia con amigos por Bluetooth.",
+        wearos_f1: "Batallas por turnos con sistema completo de tipos",
+        wearos_f2: "Encuentros salvajes segun hora del dia y fase lunar",
+        wearos_f3: "Eclosion de huevos caminando en la vida real",
+        wearos_f4: "Tienda de bayas con rotacion diaria",
+        wearos_f5: "Intercambio de Pokemon via Bluetooth",
+        wearos_f6: "100+ evoluciones por nivel, piedra, intercambio y amistad",
+        wearos_f7: "Naturalezas, estadisticas y objetos equipables",
+        wearos_f8: "Modo Roguelike con oleadas y jefes",
+
+        mobile_title: "Companion App",
+        mobile_desc: "Expande tu aventura en el movil. Gestiona tu equipo, explora habitats interactivos, completa misiones narrativas con personajes legendarios, y respalda tu progreso en la nube.",
+        mobile_f1: "6 tabs: Equipo, PC, Quests, Pokedex, Inventario, Perfil",
+        mobile_f2: "Batallas 6v6 con entrenadores inteligentes",
+        mobile_f3: "8+ misiones narrativas (Deoxys, Eevee, Celebi...)",
+        mobile_f4: "11 habitats tematicos con Pokemon animados",
+        mobile_f5: "Tower Defense con los Regi legendarios",
+        mobile_f6: "Modo Roguelike con biomas y recompensas",
+        mobile_f7: "Incubadora de huevos con boost de objetos",
+        mobile_f8: "Copia de seguridad en la nube",
+
+        conn_title: "Watch + Phone",
+        conn_subtitle: "Dos dispositivos, una aventura. Sincronizacion en tiempo real entre tu reloj y tu movil.",
+        conn_watch_sub: "App principal",
+        conn_phone_sub: "Companion + quests",
+        conn_sync: "Sincroniza equipo, PC, huevos y pokedex",
+        conn_cmd: "Gestiona tu equipo desde el movil",
+        conn_cloud: "Copia de seguridad en la nube",
+
+        features_title: "Caracteristicas",
+        features_subtitle: "Un juego completo en tu muneca con profundidad de mecanicas digna de los juegos originales.",
+        feat_battle_title: "Motor de Batallas",
+        feat_battle_desc: "Dano fisico y especial, bonificacion por tipo, 18 tipos, golpes criticos, estados alterados y movimientos de defensa.",
+        feat_evo_title: "Evoluciones",
+        feat_evo_desc: "100+ evoluciones por nivel, piedra, intercambio y amistad. Incluye cadenas completas de las 3 primeras generaciones.",
+        feat_quest_title: "Misiones Narrativas",
+        feat_quest_desc: "8+ arcos narrativos: Deoxys, Eevee, Torre Lavanda, Bestias Legendarias, Celebi, Lugia, Hoenn y los Regi Colossus.",
+        feat_habitat_title: "Habitats Interactivos",
+        feat_habitat_desc: "11 zonas tematicas con Pokemon animados. Los Pokemon caminan, duermen, socializan y reaccionan segun su personalidad.",
+        feat_td_title: "Tower Defense",
+        feat_td_desc: "Minijuego de defensa de torre con los Regi legendarios. Posiciona Pokemon estrategicamente para defender contra oleadas.",
+        feat_rogue_title: "Modo Roguelike",
+        feat_rogue_desc: "Encuentros en oleadas con biomas, peligros ambientales, jefes unicos y pools de recompensas aleatorias.",
+        feat_egg_title: "Eclosion de Huevos",
+        feat_egg_desc: "Eclosiona huevos caminando en la vida real. Cuantos mas pasos des, mas cerca estaras de descubrir un nuevo Pokemon.",
+        feat_encounter_title: "Encuentros Salvajes",
+        feat_encounter_desc: "Pokemon diferentes segun la hora del dia y la fase lunar. Con suerte podras encontrar Pokemon shiny o incluso legendarios.",
+
+        screenshots_title: "Capturas",
+        screenshots_subtitle: "Vistazos de la aplicacion companion en accion.",
+        ss_quest: "Hub de Misiones",
+        ss_td: "Tower Defense",
+        ss_prep: "Preparacion",
+        ss_complete: "Quest Completada",
+
+        legal_title: "Marco Legal",
+        legal_subtitle: "Este proyecto respeta la propiedad intelectual de sus titulares.",
+        legal_disclaimer_title: "Disclaimer",
+        legal_disclaimer_text: "Este es un proyecto de fan (fan-made) creado con fines educativos y de entretenimiento personal, sin animo de lucro. No se cobra, no se monetiza y no se pretende obtener beneficio economico de ninguna forma. La aplicacion se distribuye gratuitamente.",
+        legal_ip_title: "Propiedad Intelectual",
+        legal_ip_text: "Pokemon, los nombres de Pokemon, personajes, sprites y elementos relacionados son marcas registradas y propiedad intelectual de:",
+        legal_ip_1: "The Pokemon Company",
+        legal_ip_2: "Nintendo Co., Ltd.",
+        legal_ip_3: "Game Freak Inc.",
+        legal_ip_4: "Creatures Inc.",
+        legal_ip_noaffil: "Este proyecto NO esta afiliado, patrocinado, respaldado ni aprobado por ninguna de estas empresas.",
+        legal_assets_title: "Atribuciones de Assets",
+        legal_attr_pokeapi: "Datos de Pokemon, movimientos, sprites estaticos. API abierta y gratuita.",
+        legal_attr_showdown: "Sprites animados GIF. Proyecto open-source de la comunidad.",
+        legal_attr_pmd: "Sprites direccionales animados para habitats. Proyecto comunitario colaborativo.",
+        legal_attr_google: "Wearable Data Layer API, Health Services API, Nearby Connections.",
+        legal_banner: '<strong>Pokemon&reg;</strong> es una marca registrada de The Pokemon Company. Todos los nombres de Pokemon, personajes y elementos graficos relacionados son propiedad de sus respectivos titulares. Este proyecto es una obra derivada de fan, sin fines comerciales, creada con el maximo respeto hacia la propiedad intelectual original.',
+
+        dl_title: "Descarga",
+        dl_subtitle: "Descarga las APKs directamente. Aplicacion gratuita, sin animo de lucro.",
+        dl_watch_desc: "App principal para smartwatch WearOS 3.0+. Requiere Android 12 o superior.",
+        dl_phone_desc: "App companion para movil Android 8.0+. Quests, habitats, copia de seguridad en la nube.",
+        dl_watch_btn: "Descargar WearOS APK",
+        dl_phone_btn: "Descargar Android APK",
+        dl_install_title: "Como instalar",
+        dl_step1: "Descarga el archivo APK en tu dispositivo.",
+        dl_step2: 'En Ajustes > Seguridad, activa "Origenes desconocidos" o "Instalar apps desconocidas".',
+        dl_step3: "Abre el archivo APK descargado y sigue las instrucciones de instalacion.",
+        dl_step4: "Para la app WearOS, transfiere la APK a tu smartwatch desde la app Wear OS de tu movil.",
+
+        footer_desc: "Proyecto fan-made de mascota virtual Pokemon para WearOS y Android. Creado con amor por la comunidad Pokemon.",
+        footer_nav: "Navegacion",
+        footer_resources: "Recursos",
+        footer_legal: 'Pokemon&reg; es una marca registrada de The Pokemon Company, Nintendo, Game Freak y Creatures Inc. Este es un proyecto de fan sin animo de lucro, no afiliado ni respaldado por los titulares de derechos. Todos los derechos de Pokemon pertenecen a sus respectivos propietarios.',
+    },
+    en: {
+        nav_concept: "Concept",
+        nav_wearos: "WearOS",
+        nav_mobile: "Mobile",
+        nav_connection: "Connection",
+        nav_features: "Features",
+        nav_legal: "Legal",
+        nav_download: "Download",
+
+        hero_badge: "FAN PROJECT &bull; NON-PROFIT",
+        hero_tagline: "Your virtual Pokemon pet on your wrist",
+        hero_btn_download: "Download APK",
+        hero_btn_explore: "Explore",
+
+        concept_title: "What is PokemonPet?",
+        concept_subtitle: "A Tamagotchi experience in the Pokemon universe. Feed, train, battle and trade from your smartwatch.",
+        concept_feed_title: "Feed",
+        concept_feed_desc: "Take care of your Pokemon's hunger and health with berries and items. The hunger system affects HP regeneration.",
+        concept_train_title: "Train",
+        concept_train_desc: "Earn experience by walking in real life. Every 10 steps = 1 XP. Level up and evolve your Pokemon.",
+        concept_battle_title: "Battle",
+        concept_battle_desc: "Turn-based battles with full type system, STAB, criticals and status effects. Wild encounters and trainers.",
+        concept_trade_title: "Trade",
+        concept_trade_desc: "Trade Pokemon with friends via Bluetooth. Some Pokemon evolve when traded.",
+
+        wearos_title: "Your Pokemon on your wrist",
+        wearos_desc: "The main app lives on your WearOS smartwatch. Care for your team of up to 6 Pokemon, battle wild Pokemon, hatch eggs by walking and trade with friends via Bluetooth.",
+        wearos_f1: "Turn-based battles with full type system",
+        wearos_f2: "Wild encounters based on time of day and moon phase",
+        wearos_f3: "Hatch eggs by walking in real life",
+        wearos_f4: "Berry shop with daily rotation",
+        wearos_f5: "Trade Pokemon via Bluetooth",
+        wearos_f6: "100+ evolutions by level, stone, trade and friendship",
+        wearos_f7: "Natures, stats and equippable items",
+        wearos_f8: "Roguelike mode with waves and bosses",
+
+        mobile_title: "Companion App",
+        mobile_desc: "Expand your adventure on mobile. Manage your team, explore interactive habitats, complete narrative quests with legendary characters, and back up your progress to the cloud.",
+        mobile_f1: "6 tabs: Team, PC, Quests, Pokedex, Inventory, Profile",
+        mobile_f2: "6v6 battles with smart trainers",
+        mobile_f3: "8+ narrative quests (Deoxys, Eevee, Celebi...)",
+        mobile_f4: "11 themed habitats with animated Pokemon",
+        mobile_f5: "Tower Defense with legendary Regis",
+        mobile_f6: "Roguelike mode with biomes and rewards",
+        mobile_f7: "Egg incubator with item boosts",
+        mobile_f8: "Cloud backup",
+
+        conn_title: "Watch + Phone",
+        conn_subtitle: "Two devices, one adventure. Real-time sync between your watch and your phone.",
+        conn_watch_sub: "Main app",
+        conn_phone_sub: "Companion + quests",
+        conn_sync: "Syncs team, PC, eggs and pokedex",
+        conn_cmd: "Manage your team from your phone",
+        conn_cloud: "Cloud backup",
+
+        features_title: "Features",
+        features_subtitle: "A complete game on your wrist with mechanics depth worthy of the original games.",
+        feat_battle_title: "Battle Engine",
+        feat_battle_desc: "Physical and special damage, type bonuses, 18 types, critical hits, status ailments and defensive moves.",
+        feat_evo_title: "Evolutions",
+        feat_evo_desc: "100+ evolutions by level, stone, trade and friendship. Complete evolution chains from the first 3 generations.",
+        feat_quest_title: "Narrative Quests",
+        feat_quest_desc: "8+ story arcs: Deoxys, Eevee, Lavender Tower, Legendary Beasts, Celebi, Lugia, Hoenn and Regi Colossus.",
+        feat_habitat_title: "Interactive Habitats",
+        feat_habitat_desc: "11 themed zones with animated Pokemon. Pokemon walk, sleep, socialize and react based on personality.",
+        feat_td_title: "Tower Defense",
+        feat_td_desc: "Tower defense minigame with legendary Regis. Strategically position Pokemon to defend against waves.",
+        feat_rogue_title: "Roguelike Mode",
+        feat_rogue_desc: "Wave-based encounters with biomes, environmental hazards, unique bosses and random reward pools.",
+        feat_egg_title: "Egg Hatching",
+        feat_egg_desc: "Hatch eggs by walking in real life. The more steps you take, the closer you are to discovering a new Pokemon.",
+        feat_encounter_title: "Wild Encounters",
+        feat_encounter_desc: "Different Pokemon based on time of day and moon phase. With luck you may find shiny or even legendary Pokemon.",
+
+        screenshots_title: "Screenshots",
+        screenshots_subtitle: "Glimpses of the companion app in action.",
+        ss_quest: "Quest Hub",
+        ss_td: "Tower Defense",
+        ss_prep: "Preparation",
+        ss_complete: "Quest Complete",
+
+        legal_title: "Legal Notice",
+        legal_subtitle: "This project respects the intellectual property of its rightful owners.",
+        legal_disclaimer_title: "Disclaimer",
+        legal_disclaimer_text: "This is a fan-made project created for educational and personal entertainment purposes, with no intent for profit. It is not sold, monetized, or intended to generate economic benefit in any way. The application is distributed for free.",
+        legal_ip_title: "Intellectual Property",
+        legal_ip_text: "Pokemon, Pokemon names, characters, sprites and related elements are registered trademarks and intellectual property of:",
+        legal_ip_1: "The Pokemon Company",
+        legal_ip_2: "Nintendo Co., Ltd.",
+        legal_ip_3: "Game Freak Inc.",
+        legal_ip_4: "Creatures Inc.",
+        legal_ip_noaffil: "This project is NOT affiliated with, sponsored by, endorsed by, or approved by any of these companies.",
+        legal_assets_title: "Asset Attributions",
+        legal_attr_pokeapi: "Pokemon data, moves, static sprites. Open and free API.",
+        legal_attr_showdown: "Animated GIF sprites. Community open-source project.",
+        legal_attr_pmd: "Directional animated sprites for habitats. Collaborative community project.",
+        legal_attr_google: "Wearable Data Layer API, Health Services API, Nearby Connections.",
+        legal_banner: '<strong>Pokemon&reg;</strong> is a registered trademark of The Pokemon Company. All Pokemon names, characters and related graphic elements are the property of their respective owners. This project is a fan-made derivative work, non-commercial, created with the utmost respect for the original intellectual property.',
+
+        dl_title: "Download",
+        dl_subtitle: "Download the APKs directly. Free app, non-profit.",
+        dl_watch_desc: "Main app for WearOS 3.0+ smartwatches. Requires Android 12 or higher.",
+        dl_phone_desc: "Companion app for Android 8.0+ phones. Quests, habitats, cloud backup.",
+        dl_watch_btn: "Download WearOS APK",
+        dl_phone_btn: "Download Android APK",
+        dl_install_title: "How to install",
+        dl_step1: "Download the APK file on your device.",
+        dl_step2: 'In Settings > Security, enable "Unknown sources" or "Install unknown apps".',
+        dl_step3: "Open the downloaded APK file and follow the installation instructions.",
+        dl_step4: "For the WearOS app, transfer the APK to your smartwatch from the Wear OS app on your phone.",
+
+        footer_desc: "Fan-made virtual Pokemon pet project for WearOS and Android. Made with love for the Pokemon community.",
+        footer_nav: "Navigation",
+        footer_resources: "Resources",
+        footer_legal: 'Pokemon&reg; is a registered trademark of The Pokemon Company, Nintendo, Game Freak and Creatures Inc. This is a non-profit fan project, not affiliated with or endorsed by the rights holders. All Pokemon rights belong to their respective owners.',
+    }
+};
+
+let currentLang = 'es';
+
+function setLang(lang) {
+    currentLang = lang;
+    document.documentElement.lang = lang;
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.trim() === lang.toUpperCase());
+    });
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[lang][key]) {
+            el.innerHTML = i18n[lang][key];
+        }
+    });
+}
+
+// ========== HERO SPRITES ==========
+const heroPokemons = [
+    { id: 25, name: 'Pikachu' },
+    { id: 6, name: 'Charizard' },
+    { id: 150, name: 'Mewtwo' },
+    { id: 384, name: 'Rayquaza' },
+    { id: 249, name: 'Lugia' },
+    { id: 133, name: 'Eevee' },
+    { id: 448, name: 'Lucario' },
+    { id: 94, name: 'Gengar' },
+    { id: 143, name: 'Snorlax' },
+    { id: 245, name: 'Suicune' },
+];
+
+const spriteBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/';
+
+function initHero() {
+    const heroSprite = document.getElementById('hero-sprite');
+    heroSprite.src = spriteBase + '94.gif';
+    heroSprite.alt = 'Gengar';
+
+    const row = document.getElementById('hero-sprites-row');
+    heroPokemons.forEach(p => {
+        const img = document.createElement('img');
+        img.className = 'hero-mini-sprite';
+        img.src = spriteBase + p.id + '.gif';
+        img.alt = p.name;
+        img.loading = 'lazy';
+        img.onclick = () => {
+            heroSprite.src = spriteBase + p.id + '.gif';
+            heroSprite.alt = p.name;
+        };
+        row.appendChild(img);
+    });
+}
+
+// ========== WATCH SPRITE ROTATION ==========
+const watchPokemons = [
+    { id: 25, name: 'PIKACHU' },
+    { id: 6, name: 'CHARIZARD' },
+    { id: 133, name: 'EEVEE' },
+    { id: 150, name: 'MEWTWO' },
+    { id: 448, name: 'LUCARIO' },
+    { id: 143, name: 'SNORLAX' },
+];
+
+let watchIndex = 0;
+function rotateWatchSprite() {
+    watchIndex = (watchIndex + 1) % watchPokemons.length;
+    const sprite = document.getElementById('watch-sprite');
+    const name = document.getElementById('watch-name');
+    sprite.style.opacity = '0';
+    setTimeout(() => {
+        sprite.src = spriteBase + watchPokemons[watchIndex].id + '.gif';
+        name.textContent = watchPokemons[watchIndex].name;
+        sprite.style.opacity = '1';
+    }, 300);
+}
+
+setInterval(rotateWatchSprite, 4000);
+
+// ========== PARTICLES ==========
+const canvas = document.getElementById('particles-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+    constructor() {
+        this.reset();
+    }
+
+    reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.speedY = (Math.random() - 0.5) * 0.5;
+        this.opacity = Math.random() * 0.4 + 0.1;
+        this.color = Math.random() > 0.5 ? '#EE1515' : '#FFD700';
+    }
+
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+            this.reset();
+        }
+    }
+
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = this.opacity;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
+}
+
+for (let i = 0; i < 60; i++) {
+    particles.push(new Particle());
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+    requestAnimationFrame(animateParticles);
+}
+
+animateParticles();
+
+// ========== SCROLL ANIMATIONS ==========
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+});
+
+document.querySelectorAll('[data-anim]').forEach(el => {
+    observer.observe(el);
+});
+
+// Also observe specific elements
+document.querySelectorAll('.concept-card, .feature-card, .screenshot-item, .download-card, .legal-card, .watch-mockup, .phone-mockup, .device-info, .conn-device, .conn-arrows').forEach(el => {
+    observer.observe(el);
+});
+
+// ========== INIT ==========
+initHero();
+</script>
+
+</body>
+</html>
