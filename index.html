@@ -1271,6 +1271,8 @@
                     <li><span class="feature-dot red"></span> <span data-i18n="wearos_f6">100+ evoluciones por nivel, piedra, intercambio y amistad</span></li>
                     <li><span class="feature-dot red"></span> <span data-i18n="wearos_f7">Naturalezas, estadisticas y objetos equipables</span></li>
                     <li><span class="feature-dot red"></span> <span data-i18n="wearos_f8">Modo Roguelike con oleadas y jefes</span></li>
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f9">Habilidades pasivas: eclosion x2, objetos tras batalla, sincro naturaleza</span></li>
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f10">Sistema de EVs y entrenamiento con vitaminas y mints</span></li>
                 </ul>
             </div>
             <div>
@@ -1309,6 +1311,8 @@
                     <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f6">Modo Roguelike con biomas y recompensas</span></li>
                     <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f7">Incubadora de huevos con boost de objetos</span></li>
                     <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f8">Copia de seguridad en la nube</span></li>
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f9">Tienda de entrenamiento: vitaminas, bayas EV y mints</span></li>
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f10">Clima dinamico en habitats con bonus de XP por tipo</span></li>
                 </ul>
             </div>
             <div>
@@ -1434,6 +1438,27 @@
                 <div class="feature-card-content">
                     <h3 data-i18n="feat_encounter_title">Encuentros Salvajes</h3>
                     <p data-i18n="feat_encounter_desc">Spawns por hora del dia y fase lunar. Shiny odds: 1/8192 normal, 1/4096 luna llena. Legendarios desde nivel 40+.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/467.gif" alt="Magmortar">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_training_title">Entrenamiento</h3>
+                    <p data-i18n="feat_training_desc">Personaliza a tus Pokemon con vitaminas (+10 EV), bayas reductoras (-10 EV) y mints que cambian la naturaleza efectiva.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/59.gif" alt="Arcanine">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_passive_title">Habilidades Pasivas</h3>
+                    <p data-i18n="feat_passive_desc">Cuerpo Llama acelera eclosiones x2, Recogida encuentra objetos, Sincronizacion copia naturaleza y Intimidacion reduce encuentros.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/382.gif" alt="Kyogre">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_weather_title">Clima Dinamico</h3>
+                    <p data-i18n="feat_weather_desc">El habitat cambia de clima cada 4 horas. Pokemon de tipos afines ganan +50% XP y aparecen con mas frecuencia.</p>
                 </div>
             </div>
         </div>
@@ -1669,6 +1694,16 @@ const i18n = {
         feat_egg_desc: "Eclosiona huevos caminando en la vida real. Cuantos mas pasos des, mas cerca estaras de descubrir un nuevo Pokemon.",
         feat_encounter_title: "Encuentros Salvajes",
         feat_encounter_desc: "Pokemon diferentes segun la hora del dia y la fase lunar. Con suerte podras encontrar Pokemon shiny o incluso legendarios.",
+        feat_training_title: "Entrenamiento",
+        feat_training_desc: "Personaliza a tus Pokemon con vitaminas (+10 EV), bayas reductoras (-10 EV) y mints que cambian la naturaleza efectiva. Limite: 252 por stat, 510 total.",
+        feat_passive_title: "Habilidades Pasivas",
+        feat_passive_desc: "Cuerpo Llama/Escudo Magma eclosiona huevos x2 mas rapido. Recogida encuentra objetos tras batallas (10%). Sincronia copia naturaleza a salvajes (50%). Intimidacion reduce encuentros al 50%.",
+        feat_weather_title: "Clima Dinamico",
+        feat_weather_desc: "El habitat cambia de clima cada 4 horas: Soleado (Fuego/Planta +50% XP), Lluvia (Agua/Electrico), Tormenta (Roca/Tierra/Acero), Nieve (Hielo/Dragon). Los tipos afines tambien aparecen mas.",
+        wearos_f9: "Habilidades pasivas: eclosion x2, objetos tras batalla, sincro naturaleza",
+        wearos_f10: "Sistema de EVs y entrenamiento con vitaminas y mints",
+        mobile_f9: "Tienda de entrenamiento: vitaminas, bayas EV y mints",
+        mobile_f10: "Clima dinamico en habitats con bonus de XP por tipo",
 
         screenshots_title: "Capturas",
         screenshots_subtitle: "Vistazos de la aplicacion companion en accion.",
@@ -1785,6 +1820,16 @@ const i18n = {
         feat_egg_desc: "Hatch eggs by walking in real life. The more steps you take, the closer you are to discovering a new Pokemon.",
         feat_encounter_title: "Wild Encounters",
         feat_encounter_desc: "Different Pokemon based on time of day and moon phase. With luck you may find shiny or even legendary Pokemon.",
+        feat_training_title: "Training",
+        feat_training_desc: "Customize your Pokemon with vitamins (+10 EV), reduction berries (-10 EV) and mints that change the effective nature. Limits: 252 per stat, 510 total.",
+        feat_passive_title: "Passive Abilities",
+        feat_passive_desc: "Flame Body/Magma Armor halves egg hatching steps. Pickup finds items after battles (10%). Synchronize copies nature to wild Pokemon (50%). Intimidate reduces encounter rate by 50%.",
+        feat_weather_title: "Dynamic Weather",
+        feat_weather_desc: "Habitat weather changes every 4 hours: Sunny (Fire/Grass +50% XP), Rain (Water/Electric), Sandstorm (Rock/Ground/Steel), Snow (Ice/Dragon). Matching types also spawn more frequently.",
+        wearos_f9: "Passive abilities: 2x hatching, post-battle items, nature sync",
+        wearos_f10: "EV system and training with vitamins and mints",
+        mobile_f9: "Training shop: vitamins, EV berries and mints",
+        mobile_f10: "Dynamic habitat weather with type-based XP bonuses",
 
         screenshots_title: "Screenshots",
         screenshots_subtitle: "Glimpses of the companion app in action.",
