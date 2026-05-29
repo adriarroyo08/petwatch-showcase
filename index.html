@@ -1273,6 +1273,7 @@
                     <li><span class="feature-dot red"></span> <span data-i18n="wearos_f8">Modo Roguelike con oleadas y jefes</span></li>
                     <li><span class="feature-dot red"></span> <span data-i18n="wearos_f9">Habilidades pasivas: eclosion x2, objetos tras batalla, sincro naturaleza</span></li>
                     <li><span class="feature-dot red"></span> <span data-i18n="wearos_f10">Sistema de EVs y entrenamiento con vitaminas y mints</span></li>
+                    <li><span class="feature-dot red"></span> <span data-i18n="wearos_f11">Terastalización con Orbe Tera (3 cargas, recarga por pasos)</span></li>
                 </ul>
             </div>
             <div>
@@ -1313,6 +1314,7 @@
                     <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f8">Copia de seguridad en la nube</span></li>
                     <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f9">Tienda de entrenamiento: vitaminas, bayas EV y mints</span></li>
                     <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f10">Clima dinamico en habitats con bonus de XP por tipo</span></li>
+                    <li><span class="feature-dot gold"></span> <span data-i18n="mobile_f11">Terastalización en batallas de quests móviles</span></li>
                 </ul>
             </div>
             <div>
@@ -1459,6 +1461,14 @@
                 <div class="feature-card-content">
                     <h3 data-i18n="feat_weather_title">Clima Dinamico</h3>
                     <p data-i18n="feat_weather_desc">El habitat cambia de clima cada 4 horas. Pokemon de tipos afines ganan +50% XP y aparecen con mas frecuencia.</p>
+                </div>
+            </div>
+            <div class="feature-card" data-anim>
+                <img class="feature-card-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/1007.gif" alt="Koraidon"
+                     onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/646.gif'">
+                <div class="feature-card-content">
+                    <h3 data-i18n="feat_tera_title">Terastalización Completa</h3>
+                    <p data-i18n="feat_tera_desc">Cada Pokémon tiene un Tipo Tera asignado al capturarlo. Usa el Orbe Tera (3 cargas, recargable caminando 500 pasos) para cambiar el tipo de tu Pokémon en batalla. STAB x2.0 si el tipo Tera coincide con el original, x1.5 si no. Disponible en todas las batallas: salvajes, roguelike y quests móviles.</p>
                 </div>
             </div>
         </div>
@@ -1700,10 +1710,14 @@ const i18n = {
         feat_passive_desc: "Cuerpo Llama/Escudo Magma eclosiona huevos x2 mas rapido. Recogida encuentra objetos tras batallas (10%). Sincronia copia naturaleza a salvajes (50%). Intimidacion reduce encuentros al 50%.",
         feat_weather_title: "Clima Dinamico",
         feat_weather_desc: "El habitat cambia de clima cada 4 horas: Soleado (Fuego/Planta +50% XP), Lluvia (Agua/Electrico), Tormenta (Roca/Tierra/Acero), Nieve (Hielo/Dragon). Los tipos afines tambien aparecen mas.",
+        feat_tera_title: "Terastalizacion Completa",
+        feat_tera_desc: "Cada Pokemon tiene un Tipo Tera asignado al capturarlo. Usa el Orbe Tera (3 cargas, recargable caminando 500 pasos) para cambiar el tipo de tu Pokemon en batalla. STAB x2.0 si el tipo Tera coincide con el original, x1.5 si no. Disponible en todas las batallas: salvajes, roguelike y quests moviles.",
         wearos_f9: "Habilidades pasivas: eclosion x2, objetos tras batalla, sincro naturaleza",
         wearos_f10: "Sistema de EVs y entrenamiento con vitaminas y mints",
+        wearos_f11: "Terastalizacion con Orbe Tera (3 cargas, recarga por pasos)",
         mobile_f9: "Tienda de entrenamiento: vitaminas, bayas EV y mints",
         mobile_f10: "Clima dinamico en habitats con bonus de XP por tipo",
+        mobile_f11: "Terastalizacion en batallas de quests moviles",
 
         screenshots_title: "Capturas",
         screenshots_subtitle: "Vistazos de la aplicacion companion en accion.",
@@ -1826,10 +1840,14 @@ const i18n = {
         feat_passive_desc: "Flame Body/Magma Armor halves egg hatching steps. Pickup finds items after battles (10%). Synchronize copies nature to wild Pokemon (50%). Intimidate reduces encounter rate by 50%.",
         feat_weather_title: "Dynamic Weather",
         feat_weather_desc: "Habitat weather changes every 4 hours: Sunny (Fire/Grass +50% XP), Rain (Water/Electric), Sandstorm (Rock/Ground/Steel), Snow (Ice/Dragon). Matching types also spawn more frequently.",
+        feat_tera_title: "Full Terastallization",
+        feat_tera_desc: "Every Pokemon gets a Tera Type on capture. Use the Tera Orb (3 charges, rechargeable by walking 500 steps) to change your Pokemon's type mid-battle. STAB x2.0 when Tera matches original type, x1.5 otherwise. Available in all battle modes: wild, roguelike, and mobile quests.",
         wearos_f9: "Passive abilities: 2x hatching, post-battle items, nature sync",
         wearos_f10: "EV system and training with vitamins and mints",
+        wearos_f11: "Terastallization with Tera Orb (3 charges, recharges by walking)",
         mobile_f9: "Training shop: vitamins, EV berries and mints",
         mobile_f10: "Dynamic habitat weather with type-based XP bonuses",
+        mobile_f11: "Terastallization in mobile quest battles",
 
         screenshots_title: "Screenshots",
         screenshots_subtitle: "Glimpses of the companion app in action.",
